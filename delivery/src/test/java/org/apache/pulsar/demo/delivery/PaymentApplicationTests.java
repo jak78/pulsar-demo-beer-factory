@@ -1,4 +1,4 @@
-package org.apache.pulsar.demo.payment;
+package org.apache.pulsar.demo.delivery;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

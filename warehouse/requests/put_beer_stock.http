@@ -1,0 +1,15 @@
+PUT http://localhost:9099/beer_stocks
+Content-Type: application/json
+
+[
+  {"beerName": "Moinette","stockLevel": 43},
+  {"beerName": "Karmeliet","stockLevel": 100},
+  {"beerName": "Moinette","stockLevel": 42},
+  {"beerName": "Moinette","stockLevel": 41},
+  {"beerName": "Moinette","stockLevel": 39},
+  {"beerName": "Karmeliet","stockLevel": 101},
+  {"beerName": "Karmeliet","stockLevel": 102}
+]
+
+
+###

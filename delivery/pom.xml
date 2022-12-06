@@ -9,18 +9,15 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>org.apache.pulsar.demo</groupId>
-  <artifactId>warehouse</artifactId>
+  <artifactId>delivery</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>warehouse</name>
-  <description>Website</description>
+  <name>delivery</name>
+  <description>Delivery Microservice</description>
   <properties>
     <java.version>19</java.version>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -33,12 +30,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.pulsar</groupId>
       <artifactId>spring-pulsar-spring-boot-starter</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
-
-
   </dependencies>
 
   <build>
@@ -49,7 +49,6 @@
       </plugin>
     </plugins>
   </build>
-
   <repositories>
     <repository>
       <id>spring-milestones</id>
@@ -68,5 +67,4 @@
       </releases>
     </repository>
   </repositories>
-
 </project>

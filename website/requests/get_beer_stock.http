@@ -1,0 +1,6 @@
+GET http://localhost:9090/beer_stocks
+Content-Type: application/json
+
+
+
+###
