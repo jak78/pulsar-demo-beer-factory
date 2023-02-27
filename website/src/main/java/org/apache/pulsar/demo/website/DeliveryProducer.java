@@ -31,7 +31,7 @@ public class DeliveryProducer {
         this.objectMapper = objectMapper;
     }
 
-    @Scheduled(fixedRate = 2_000)
+    @Scheduled(fixedRate = 1_000)
     public void sendDeliveryOrder() throws PulsarClientException, JsonProcessingException {
         String jsonPayment = generateDeliveryOrder();
         producer.send("delivery-orders-topic", jsonPayment);
