@@ -26,7 +26,7 @@ public class BeerProducer {
         this.json = json;
     }
 
-    @Scheduled(fixedRate = 2_000)
+    @Scheduled(fixedRate = 5_000)
     public void produce() throws JsonProcessingException, PulsarClientException {
         for (BeerStock b : beerStocks()) {
             String message = json.writeValueAsString(b);
@@ -36,17 +36,24 @@ public class BeerProducer {
                     .send();
             log.info("Sent {}", message);
         }
+        log.info("--------------------------");
     }
 
     private Collection<BeerStock> beerStocks() {
         return List.of(
+                new BeerStock("Chimay", 6),
+                new BeerStock("Chouffe", 2),
+                new BeerStock("Chimay", 4),
                 new BeerStock("Moinette", 43),
                 new BeerStock("Karmeliet", 140),
                 new BeerStock("Moinette", 41),
                 new BeerStock("Moinette", 39),
                 new BeerStock("Moinette", 42),
                 new BeerStock("Karmeliet", 141),
-                new BeerStock("Karmeliet", 142)
+                new BeerStock("Karmeliet", 142),
+                new BeerStock("Chimay", 1),
+                new BeerStock("Chimay", 0),
+                new BeerStock("Chouffe", 0)
         );
     }
 }
