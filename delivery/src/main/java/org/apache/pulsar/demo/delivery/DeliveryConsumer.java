@@ -12,8 +12,10 @@ public class DeliveryConsumer {
     
     Logger log = LoggerFactory.getLogger(DeliveryConsumer.class);
     
-    @PulsarListener(subscriptionName = "delivery-subscription", topics = "delivery-orders-topic", subscriptionType = Shared)
+    @PulsarListener(subscriptionName = "delivery-subscription", 
+            topics = "delivery-orders-topic", 
+            subscriptionType = Shared)
     void listen(String message) {
-        log.info("**** Delivery order received **** " + message);
+        log.info("**** Delivery order received **** {}", message);
     }
 }
