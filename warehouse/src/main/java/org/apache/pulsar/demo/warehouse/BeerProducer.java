@@ -41,19 +41,19 @@ public class BeerProducer {
 
     private Collection<BeerStock> beerStocks() {
         return List.of(
-                new BeerStock("Chimay", 6),
-                new BeerStock("Chouffe", 2),
-                new BeerStock("Chimay", 4),
-                new BeerStock("Moinette", 43),
+                new BeerStock("Chimay",      6),
+                new BeerStock("Chouffe",     2),
+                new BeerStock("Chimay",      4),
+                new BeerStock("Moinette",   43),
                 new BeerStock("Karmeliet", 140),
-                new BeerStock("Moinette", 41),
-                new BeerStock("Moinette", 39),
-                new BeerStock("Moinette", 42),
+                new BeerStock("Moinette",   41),
+                new BeerStock("Moinette",   39),
+                new BeerStock("Moinette",   42),
                 new BeerStock("Karmeliet", 141),
                 new BeerStock("Karmeliet", 142),
-                new BeerStock("Chimay", 1),
-                new BeerStock("Chimay", 0),
-                new BeerStock("Chouffe", 0)
+                new BeerStock("Chimay",      1),
+                new BeerStock("Chimay",      0),
+                new BeerStock("Chouffe",     0)
         );
     }
 }
