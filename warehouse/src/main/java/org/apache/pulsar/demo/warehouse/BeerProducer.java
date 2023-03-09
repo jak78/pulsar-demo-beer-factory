@@ -26,7 +26,7 @@ public class BeerProducer {
         this.json = json;
     }
 
-    @Scheduled(fixedRate = 5_000)
+    @Scheduled(fixedRate = 1_000)
     public void produce() throws JsonProcessingException, PulsarClientException {
         for (BeerStock b : beerStocks()) {
             String message = json.writeValueAsString(b);
