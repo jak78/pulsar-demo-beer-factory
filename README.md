@@ -24,7 +24,7 @@ You run a Belgian beer reseller company. You sell beers online and deliver them 
 
 <img src="messaging.png" width="300px">
 
-When a beer order is issued, the Website sends it to the Delivery service. 
+When a beer order is placed, the Website sends it to the Delivery service. 
 
 This service is responsible for delivering the order to the customer’s home. 
 
