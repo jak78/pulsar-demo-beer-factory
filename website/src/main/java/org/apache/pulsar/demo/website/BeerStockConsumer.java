@@ -24,7 +24,7 @@ public class BeerStockConsumer {
 
     @PulsarListener(subscriptionName = "beer-stocks-sub", 
             topics = "beer-stocks-topic", 
-            subscriptionType = SubscriptionType.Shared)
+            subscriptionType = SubscriptionType.Failover)
     void listen(String message) throws JsonProcessingException {
         log.info("**** Beer stock received **** " + message);
         BeerStock updatedBeerStock = json.readValue(message, BeerStock.class);
