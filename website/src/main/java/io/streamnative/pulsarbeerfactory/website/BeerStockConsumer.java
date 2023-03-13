@@ -21,7 +21,7 @@ public class BeerStockConsumer {
     @PulsarListener(subscriptionName = "beer-stocks-sub", 
             topics = "beer-stocks-topic", 
             subscriptionType = SubscriptionType.Failover,
-            schemaType = SchemaType.JSON)
+            schemaType = SchemaType.AVRO)
     void listen(BeerStock beerStock) {
         log.info("**** Beer stock received **** " + beerStock);
         beerStockRepository.save(beerStock);

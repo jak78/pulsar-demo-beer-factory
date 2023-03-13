@@ -14,6 +14,6 @@ public class PulsarConfig {
 
     @PostConstruct
     void setupTopicSchema() {
-        pulsarTemplate.setSchema(Schema.JSON(BeerStock.class));
+        pulsarTemplate.setSchema(Schema.AVRO(BeerStock.class));
     }
 }
