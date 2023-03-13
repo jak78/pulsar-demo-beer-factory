@@ -1,4 +1,4 @@
-package org.apache.pulsar.demo.website;
+package io.streamnative.pulsarbeerfactory.website;
 
 public class DeliveryOrder {
     int parcelNumber;

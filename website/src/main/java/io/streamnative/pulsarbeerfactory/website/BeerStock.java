@@ -1,6 +1,11 @@
-package org.apache.pulsar.demo.warehouse;
+package io.streamnative.pulsarbeerfactory.website;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
+@RedisHash("BeerStock")
 public class BeerStock {
+    @Id
     String beerName;
     int stockLevel;
 

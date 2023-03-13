@@ -1,4 +1,4 @@
-package org.apache.pulsar.demo.warehouse;
+package io.streamnative.pulsarbeerfactory.warehouse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

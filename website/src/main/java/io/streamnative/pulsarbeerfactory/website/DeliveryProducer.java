@@ -1,4 +1,4 @@
-package org.apache.pulsar.demo.website;
+package io.streamnative.pulsarbeerfactory.website;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

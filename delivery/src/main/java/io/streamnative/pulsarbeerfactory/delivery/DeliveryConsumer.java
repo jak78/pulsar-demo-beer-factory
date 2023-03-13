@@ -1,4 +1,4 @@
-package org.apache.pulsar.demo.delivery;
+package io.streamnative.pulsarbeerfactory.delivery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

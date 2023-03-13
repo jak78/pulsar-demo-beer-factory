@@ -1,4 +1,4 @@
-package org.apache.pulsar.demo.website;
+package io.streamnative.pulsarbeerfactory.website;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
