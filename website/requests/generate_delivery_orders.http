@@ -1,4 +1,0 @@
-POST http://localhost:9090/delivery_orders/random/10
-Content-Type: application/json
-
-###
