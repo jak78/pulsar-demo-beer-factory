@@ -1,7 +1,5 @@
 package io.streamnative.pulsarbeerfactory.warehouse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,26 +13,22 @@ import java.util.List;
 @Service
 public class BeerProducer {
 
-    PulsarTemplate<String> pulsarTemplate;
+    PulsarTemplate<BeerStock> pulsarTemplate;
 
-    ObjectMapper json;
-    
     Logger log = LoggerFactory.getLogger(BeerProducer.class);
 
-    public BeerProducer(PulsarTemplate<String> pulsarTemplate, ObjectMapper json) {
+    public BeerProducer(PulsarTemplate<BeerStock> pulsarTemplate) {
         this.pulsarTemplate = pulsarTemplate;
-        this.json = json;
     }
 
     @Scheduled(fixedRate = 1_000)
-    public void produce() throws JsonProcessingException, PulsarClientException {
-        for (BeerStock b : beerStocks()) {
-            String message = json.writeValueAsString(b);
-            pulsarTemplate.newMessage(message)
-                    .withMessageCustomizer(c -> c.key(b.getBeerName()))
+    public void produce() throws PulsarClientException {
+        for (BeerStock beerStock : beerStocks()) {
+            pulsarTemplate.newMessage(beerStock)
+                    .withMessageCustomizer(c -> c.key(beerStock.getBeerName()))
                     .withTopic("beer-stocks-topic")
                     .send();
-            log.info("Sent {}", message);
+            log.info("Sent {}", beerStock);
         }
         log.info("--------------------------");
     }

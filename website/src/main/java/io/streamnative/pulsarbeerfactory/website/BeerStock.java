@@ -9,6 +9,10 @@ public class BeerStock {
     String beerName;
     int stockLevel;
 
+    // Default constructor required for JSON deserialization
+    public BeerStock() {
+    }
+
     public BeerStock(String beerName, int stockLevel) {
         this.beerName = beerName;
         this.stockLevel = stockLevel;
