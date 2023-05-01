@@ -7,14 +7,6 @@ This demo aims to illustrate the Pulsar subscription modes through a code walkth
 - Maven 3.8.7 or higher
 - JDK 17 or higher
 - Docker
-- Pulsar 2.11.0 or higher. For example, you can download the binary distribution & run the standalone version locally:
-
-```bash
-curl -L -o apache-pulsar-2.11.0-bin.tar.gz "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=pulsar/pulsar-2.11.0/apache-pulsar-2.11.0-bin.tar.gz"
-tar xf apache-pulsar-2.11.0-bin.tar.gz
-cd apache-pulsar-2.11.0
-bin/pulsar standalone
-```
 
 # Background
 
@@ -65,6 +57,7 @@ In another terminal, run the following commands:
 
 ```bash
 cd website
+docker compose up -d # this will launch a standalone Pulsar and a Redis database
 mvn package
 java -jar target/website*jar
 ```
@@ -139,7 +132,14 @@ Here is what the `BeerStock`event looks like:
 
 ## Getting the current stock level
 
-### Step 1: build & launch the Warehouse service
+### Step 1: launch the Redis database & Pulsar
+
+```bash
+cd website
+docker compose up -d
+```
+
+### Step 2: build & launch the Warehouse service
 
 In a terminal, run the following commands:
 
@@ -165,12 +165,6 @@ Sent {"beerName":"Karmeliet","stockLevel":142}
 Sent {"beerName":"Chimay","stockLevel":1}
 Sent {"beerName":"Chimay","stockLevel":0}
 Sent {"beerName":"Chouffe","stockLevel":0}
-```
-
-### Step 2: launch the Redis database
-
-```bash
-docker compose up -d
 ```
 
 ### Step 3: build & launch the Website service
@@ -397,7 +391,7 @@ pulsarTemplate.newMessage(message)
 
 # What to do next
 
-- Follow me on [Twitter](https://twitter.com/jak78) to get more demos and move through your journey to Pulsar.
+- [Reach out to me](https://streamnative.io/people/julien) to get more demos and move through your journey to Pulsar.
 - Join the Pulsar Slack channel to reach out to the community.
 - Subscribe to the [StreamNative Youtube channel](https://www.youtube.com/channel/UCywxUI5HlIyc0VEKYR4X9Pg) and [read our blog](https://streamnative.io/blog) to learn more about Pulsar.
 - Try out [StreamNative’s managed Pulsar](https://streamnative.io/deployment/hosted).
