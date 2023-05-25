@@ -1,6 +1,10 @@
 # Goals
 
 This demo aims to illustrate the Pulsar subscription modes through a code walkthrough and a demo with [Spring Boot Pulsar](https://docs.spring.io/spring-pulsar/docs/current-SNAPSHOT/reference/html/).
+This demonstrates how the Pulsar subscription model provides:
+- elastic scalability of the consumer without the need to create partitions on the broker side
+- a unified API for both messaging & streaming
+This also demonstrates how easy it is to code a Pulsar client Spring Boot app.
 
 # Prerequisites
 
@@ -305,7 +309,7 @@ You will get different payloads. Some of them will have **wrong** stock levels:
 
 What happens?
 
-If you carefully look at the logs, you may see that the messages are not consumed in the right order. So a consumer may save a stale stock level to the Redis database. 
+You may see in the logs that the messages are not consumed in the right order. So a consumer may save a stale stock level to the Redis database. 
 
 This explains why sometimes the stock value is wrong.
 
