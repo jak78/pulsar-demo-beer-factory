@@ -1,9 +1,11 @@
 # Goals
 
 This demo aims to illustrate the Pulsar subscription modes through a code walkthrough and a demo with [Spring Boot Pulsar](https://docs.spring.io/spring-pulsar/docs/current-SNAPSHOT/reference/html/).
+
 This demonstrates how the Pulsar subscription model provides:
 - elastic scalability of the consumer without the need to create partitions on the broker side
 - a unified API for both messaging & streaming
+
 This also demonstrates how easy it is to code a Pulsar client Spring Boot app.
 
 # Prerequisites
