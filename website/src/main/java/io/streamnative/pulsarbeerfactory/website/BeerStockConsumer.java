@@ -7,11 +7,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.pulsar.annotation.PulsarListener;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.util.Optional;
+
 @Component
 public class BeerStockConsumer {
     
     BeerStockRepository beerStockRepository;
-
+    
+    Optional<Instant> messageReceivedAt = Optional.empty();
+    
     Logger log = LoggerFactory.getLogger(BeerStockConsumer.class);
 
     public BeerStockConsumer(BeerStockRepository beerStockRepository) {
@@ -25,5 +30,6 @@ public class BeerStockConsumer {
     void listen(BeerStock beerStock) {
         log.info("**** Beer stock received **** {}", beerStock);
         beerStockRepository.save(beerStock);
+        messageReceivedAt = Optional.of(Instant.now());
     }
 }
