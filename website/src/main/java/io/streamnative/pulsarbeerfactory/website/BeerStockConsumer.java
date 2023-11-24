@@ -23,7 +23,7 @@ public class BeerStockConsumer {
             subscriptionType = SubscriptionType.Failover,
             schemaType = SchemaType.AVRO)
     void listen(BeerStock beerStock) {
-        log.info("**** Beer stock received **** " + beerStock);
+        log.info("**** Beer stock received **** {}", beerStock);
         beerStockRepository.save(beerStock);
     }
 }
