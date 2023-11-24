@@ -21,7 +21,7 @@ public class BeerProducer {
         this.pulsarTemplate = pulsarTemplate;
     }
 
-    @Scheduled(fixedRate = 1_000)
+    @Scheduled(fixedRate = 5_000)
     public void produce() throws PulsarClientException {
         for (BeerStock beerStock : beerStocks()) {
             pulsarTemplate.newMessage(beerStock)
