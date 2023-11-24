@@ -1,6 +1,6 @@
 # Goals
 
-This demo aims to illustrate the Pulsar subscription modes through a code walkthrough and a demo with [Spring Boot Pulsar](https://docs.spring.io/spring-pulsar/docs/current-SNAPSHOT/reference/html/).
+This demo aims to illustrate the Pulsar subscription modes through a code walkthrough and a demo with [Spring for Apache Pulsar](https://docs.spring.io/spring-pulsar/docs/1.0.0/reference/index.html).
 
 This demonstrates how the Pulsar subscription model provides:
 - elastic scalability of the consumer without the need to create partitions on the broker side
@@ -13,6 +13,11 @@ This also demonstrates how easy it is to code a Pulsar client Spring Boot app.
 - Maven 3.8.7 or higher
 - JDK 17 or higher
 - Docker
+
+Build the project:
+```bash
+mvn clean package
+```
 
 # Background
 
@@ -47,32 +52,28 @@ The addresses list is a random sample of the [French national addresses open dat
 
 ## One instance
 
-### Step 1: build & launch the Delivery service
+### Step 1: build & launch the Website service
 
 In a terminal, run the following commands:
 
 ```bash
-cd delivery
-mvn package
-java -jar target/delivery*jar
+cd website
+docker compose up -d # this will launch a standalone Pulsar and a Redis database
+java -jar target/*website*jar
 ```
 
-### Step 2: build & launch the Website service
+### Step 2: build & launch the Delivery service
 
 In another terminal, run the following commands:
 
 ```bash
-cd website
-docker compose up -d # this will launch a standalone Pulsar and a Redis database
-mvn package
-java -jar target/website*jar
+cd delivery
+java -jar target/*delivery*jar
 ```
 
 ### Step 3: messages consumption
 
-Go back to the Delivery service terminal.
-
-You should now see 5 messages consumed per second:
+You should now see messages being consumed:
 
 ```
 2023-03-10T15:46:38.745+01:00  INFO 54419 --- [ntainer#0-0-C-1] o.a.p.demo.delivery.DeliveryConsumer     : **** Delivery order received **** {"parcelNumber":26,"timestamp":"2023-03-10T14:46:38.647528Z","articlesNumber":1,"address":"2 ALLEE PIERRE SERVEL 56000 VANNES               "}
@@ -83,15 +84,16 @@ You should now see 5 messages consumed per second:
 
 Now, the Delivery service has to process a larger number of orders. So you need to be ready to scale out by running several instances of the Delivery service. 
 
-Open two additional terminal windows and launch an additional instance of the Delivery service:
+Open two additional terminal windows and launch an additional instance of the Delivery service in each of them:
 
 ```bash
-java -jar target/delivery*jar
+cd delivery
+java -jar target/*delivery*jar
 ```
 
 You now have 3 Delivery service instances.
 
-You should see the messages being delivered to all the Delivery services instances in a round-robin fashion. Pulsar balances the load among the consumers.
+You should see the messages being delivered to each of the Delivery services instances in a round-robin fashion. Pulsar balances the load among these three consumers.
 
 The **Shared** subscription enables this behavior.
 
@@ -99,19 +101,19 @@ The **Shared** subscription enables this behavior.
 
 ### Consumer
 
-You can the `DeliveryConsumer`class from the `delivery` module to see how the Delivery service consumes the messages. 
+Open the `DeliveryConsumer`class from the `delivery` module to see how the Delivery service consumes the messages. 
 
 The `PulsarListener` annotation has specified a `Shared`subscription type.
 
-For more information on how this annotation works, refer to the [Spring for Apache Pulsar](https://docs.spring.io/spring-pulsar/docs/current-SNAPSHOT/reference/html/) documentation. 
+For more information on how this annotation works, refer to the [Spring for Apache Pulsar](https://docs.spring.io/spring-pulsar/docs/1.0.0/reference/index.html) documentation. 
 
 ### Producer
 
-You can open the `DeliveryProducer` class from the website module to see how the website service produces the messages. It leverages the `PulsarTemplate`API.
+Open the `DeliveryProducer` class from the `website` module to see how the website service produces the messages. It leverages the `PulsarTemplate`API.
 
-For more information, refer to the [Spring for Apache Pulsar](https://docs.spring.io/spring-pulsar/docs/current-SNAPSHOT/reference/html/) documentation.
+For more information, refer to the [Spring for Apache Pulsar](https://docs.spring.io/spring-pulsar/docs/1.0.0/reference/index.html) documentation.
 
-# Use-case #2: streaming
+# Use-case #2: Data Streaming
 
 ![streaming](streaming.png)
 
@@ -126,14 +128,14 @@ The Website service reads these events to update the current stock level on Redi
 The Website has to be scalable, so you’ll run several instances of it in parallel.
 
 <aside>
-⚠️ Please note that this architecture is not realistic. But it is simple for the sake of the demo.
+⚠️ Please note that this architecture is not suitable for production. But it is simple for the sake of the demo.
 
 </aside>
 
-Here is what the `BeerStock`event looks like:
-
-```json
-{"beerName":"Moinette","stockLevel":42}
+Here is how the `BeerStock`event looks like:
+```
+beerName: Moinette
+stockLevel: 42
 ```
 
 ## Getting the current stock level
@@ -151,8 +153,7 @@ In a terminal, run the following commands:
 
 ```bash
 cd warehouse
-mvn package
-java -jar target/warehouse*jar
+java -jar target/*warehouse*jar
 ```
 
 You now see in the terminal that the Warehouse service send a list of events to a topic every second:
@@ -181,14 +182,13 @@ In another terminal, run the following commands:
 
 ```bash
 cd website
-mvn package
-java -jar target/website*jar
+java -jar target/*website*jar
 ```
 
 In a third terminal, run a second instance of the Website service:
 
 ```bash
-java -jar target/website*jar --server.port=9091
+java -jar target/*website*jar --server.port=9091
 ```
 
 You will observe one consumer instance consuming the beer stock messages while the other consumes nothing.
@@ -273,20 +273,20 @@ Rebuild & launch the Website service:
 ```bash
 cd website
 mvn package
-java -jar target/website*jar
+java -jar target/*website*jar
 ```
 
 In another terminal, launch a second instance of the Website service:
 
 ```bash
-java -jar target/website*jar --server.port=9091
+java -jar target/*website*jar --server.port=9091
 ```
 
 Wait a few seconds, then get the current stock level at  `http://localhost:9090/beer_stocks`
 
 Run this several times.
 
-You will get different payloads. Some of them will have **wrong** stock levels:
+You will get different payloads. Many of them will have **wrong** stock levels:
 
 ```json
 [
@@ -336,13 +336,13 @@ Rebuild & launch the Website service:
 ```bash
 cd website
 mvn package
-java -jar target/website*jar
+java -jar target/*website*jar
 ```
 
 In another terminal, launch a second instance of the Website service:
 
 ```bash
-java -jar target/website*jar --server.port=9091
+java -jar target/*website*jar --server.port=9091
 ```
 
 Wait a few seconds, then get the current stock level at  `http://localhost:9090/beer_stocks`
@@ -378,9 +378,9 @@ If you carefully look at the logs, you will see that Pulsar delivers the stock l
 
 This explains why the stock value is right this time.
 
-This works because the messages are produced using the `beerName` as the **key**.
+This works because the messages are produced using the `beerName` as the **key**. 
 
-## Producing messages with a key
+Let's see how you can produce a message with a key using the `PulsarTemplate`.
 
 Open the `BeerProducer` class from the `warehouse` module.
 
@@ -397,8 +397,8 @@ pulsarTemplate.newMessage(message)
 
 # What to do next
 
-- [Reach out to me](https://streamnative.io/people/julien) to get more demos and move through your journey to Pulsar.
-- Join the Pulsar Slack channel to reach out to the community.
+- [Reach out to me](https://streamnative.io/people/julien?utm_source=devrel&utm_medium=beerfactorydemo&utm_campaign=spring) to get more demos and move through your journey to Pulsar.
+- [Join the Pulsar Community Slack](https://communityinviter.com/apps/apache-pulsar/apache-pulsar).
 - Subscribe to the [StreamNative Youtube channel](https://www.youtube.com/channel/UCywxUI5HlIyc0VEKYR4X9Pg) and [read our blog](https://streamnative.io/blog) to learn more about Pulsar.
-- Try out [StreamNative’s managed Pulsar](https://streamnative.io/deployment/hosted).
+- Try out [StreamNative’s managed Pulsar](https://streamnative.io/deployment/hosted?utm_source=devrel&utm_medium=beerfactorydemo&utm_campaign=spring).
 

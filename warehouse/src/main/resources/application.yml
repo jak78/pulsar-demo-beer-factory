@@ -1,0 +1,15 @@
+
+server:
+  port: 9099
+logging:
+  level:
+    root: WARN
+    io.streamnative: INFO
+    org.apache.pulsar.common.util.netty: ERROR
+spring:
+  pulsar:
+    defaults:
+      type-mappings: 
+        - message-type: io.streamnative.pulsarbeerfactory.warehouse.BeerStock
+          schema-info:
+            schema-type: AVRO
