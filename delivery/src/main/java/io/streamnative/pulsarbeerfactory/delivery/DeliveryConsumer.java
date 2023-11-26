@@ -6,6 +6,7 @@ import org.springframework.pulsar.annotation.PulsarListener;
 import org.springframework.stereotype.Component;
 
 import static org.apache.pulsar.client.api.SubscriptionType.Shared;
+import static org.apache.pulsar.common.schema.SchemaType.JSON;
 
 @Component
 public class DeliveryConsumer {
@@ -14,8 +15,9 @@ public class DeliveryConsumer {
     
     @PulsarListener(topics = "delivery-orders-topic",
             subscriptionName = "delivery-subscription",
-            subscriptionType = Shared)
-    void listen(String message) {
+            subscriptionType = Shared,
+            schemaType = JSON)
+    void listen(DeliveryOrder message) {
         log.info("**** Delivery order received **** {}", message);
     }
 }

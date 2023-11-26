@@ -1,6 +1,5 @@
 package io.streamnative.pulsarbeerfactory.website;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class DeliveryProducer {
 
-    PulsarTemplate<String> producer;
+    PulsarTemplate<DeliveryOrder> producer;
 
     ObjectMapper objectMapper;
     
@@ -26,25 +25,24 @@ public class DeliveryProducer {
     
     Logger log = LoggerFactory.getLogger(DeliveryProducer.class);
 
-    public DeliveryProducer(PulsarTemplate<String> producer, ObjectMapper objectMapper) {
+    public DeliveryProducer(PulsarTemplate<DeliveryOrder> producer, ObjectMapper objectMapper) {
         this.producer = producer;
         this.objectMapper = objectMapper;
     }
 
     @Scheduled(fixedRate = 200)
-    public void sendDeliveryOrder() throws PulsarClientException, JsonProcessingException {
-        String jsonPayment = generateDeliveryOrder();
-        producer.send("delivery-orders-topic", jsonPayment);
-//        log.info("Sent delivery order: {}", jsonPayment);
+    public void sendDeliveryOrder() throws PulsarClientException {
+        DeliveryOrder deliveryOrder = generateDeliveryOrder();
+        producer.send("delivery-orders-topic", deliveryOrder);
+//        log.info("Sent delivery order: {}", deliveryOrder);
     }
 
-    private String generateDeliveryOrder() throws JsonProcessingException {
+    private DeliveryOrder generateDeliveryOrder() {
         int seq = sequenceNumber.addAndGet(1);
         String now = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
         int articlesNumber = new Random().nextInt(1, 4);
         String address = pickAddress();
-        DeliveryOrder deliveryOrder = new DeliveryOrder(seq, now, articlesNumber, address);
-        return objectMapper.writeValueAsString(deliveryOrder);
+        return new DeliveryOrder(seq, now, articlesNumber, address);
     }
 
     private String pickAddress() {
