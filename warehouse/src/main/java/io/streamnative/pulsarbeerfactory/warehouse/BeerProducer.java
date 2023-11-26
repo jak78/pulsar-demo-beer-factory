@@ -4,13 +4,13 @@ import org.apache.pulsar.client.api.PulsarClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
 
-@Service
+@RestController
 public class BeerProducer {
 
     PulsarTemplate<BeerStock> pulsarTemplate;
@@ -21,7 +21,7 @@ public class BeerProducer {
         this.pulsarTemplate = pulsarTemplate;
     }
 
-    @Scheduled(fixedRate = 5_000)
+    @PostMapping("/produce")
     public void produce() throws PulsarClientException {
         for (BeerStock beerStock : beerStocks()) {
             pulsarTemplate.newMessage(beerStock)

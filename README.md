@@ -13,6 +13,8 @@ This also demonstrates how easy it is to code a Pulsar client Spring Boot app.
 - Maven 3.8.7 or higher
 - JDK 17 or higher
 - Docker
+- curl
+- jq - https://jqlang.github.io/jq/
 
 Build the project:
 ```bash
@@ -21,19 +23,21 @@ mvn clean package
 
 # Background
 
-You run a Belgian beer reseller company. You sell beers online and deliver them to your customers. As your online store is very successful, you need scalability. You also want to use one single platform to handle both messaging & streaming use cases. This is why you have chosen [Pulsar](https://pulsar.apache.org/). 
+for handling both messaging and streaming use cases.
+As the owner of a Belgian beer reseller company, you specialize in online sales and delivering your products directly to customers. 
+Given the success and growing demand of your online store, scalability has become a priority. 
+To meet this need and streamline your operations, you've chosen [Pulsar](https://pulsar.apache.org/) as a unified platform for handling both messaging and streaming use cases.
 
 # Use-case #1: messaging
 
 <img src="messaging.png" width="300px">
 
-When a beer order is placed, the Website sends it to the Delivery service. 
-
-This service is responsible for delivering the order to the customer’s home. 
-
-Delivery service is not designed to handle a website's performance and availability requirements. We need a message queue to decouple Delivery from the Website.
-
-Website publishes delivery orders to a `delivery-orders-topic` topic. Here is what a delivery order looks like:
+When an order for beer is placed, the website forwards it to the delivery service. 
+This service is tasked with delivering the order directly to the customer's home. 
+However, the delivery service isn't designed to manage the performance and availability demands of a website. 
+To address this, we need a message queue to separate the delivery operations from the website's functions. 
+The website publishes delivery orders to a delivery-orders-topic topic. 
+Below is an example of what a delivery order looks like:
 
 ```json
 {
@@ -46,7 +50,7 @@ Website publishes delivery orders to a `delivery-orders-topic` topic. Here is wh
 
 Website & Delivery are Spring Boot microservices.
 
-In this demo, the Website service sends a random delivery order every 200ms to the topic. 
+In this demo, the Website service sends a random delivery order to the topic every 200ms. 
 
 The addresses list is a random sample of the [French national addresses open database](https://adresse.data.gouv.fr/).
 
@@ -54,17 +58,17 @@ The addresses list is a random sample of the [French national addresses open dat
 
 ### Step 1: build & launch the Website service
 
-In a terminal, run the following commands:
+Run the following commands in a terminal:
 
 ```bash
 cd website
-docker compose up -d # this will launch a standalone Pulsar and a Redis database
+docker compose up -d # This launches a standalone Pulsar and a Redis database.
 java -jar target/*website*jar
 ```
 
 ### Step 2: build & launch the Delivery service
 
-In another terminal, run the following commands:
+Run the following commands in another terminal window:
 
 ```bash
 cd delivery
@@ -82,9 +86,8 @@ You should now see messages being consumed:
 
 ## Scaling the consumption
 
-Now, the Delivery service has to process a larger number of orders. So you need to be ready to scale out by running several instances of the Delivery service. 
-
-Open two additional terminal windows and launch an additional instance of the Delivery service in each of them:
+With the increase in order volume, it's necessary to scale the Delivery service. 
+To do this, open two additional terminal windows and launch a new instance of the Delivery service in each.
 
 ```bash
 cd delivery
@@ -117,22 +120,17 @@ For more information, refer to the [Spring for Apache Pulsar](https://docs.sprin
 
 ![streaming](streaming.png)
 
-The Website service exposes the current stock level of every Belgian beer through a `/beer_stock` REST endpoint.
-
-The current stock level is stored in a Redis database.
-
-When the stock level of a beer changes in the warehouse, the Warehouse service produces a message to a topic. This message contains the new stock level of the beer. For example, when the warehouse has been replenished with Moinette beer, then the stock level of the Moinette changes, and the Warehouse service produces a message.
-
-The Website service reads these events to update the current stock level on Redis.
-
-The Website has to be scalable, so you’ll run several instances of it in parallel.
+The Website service offers real-time visibility of Belgian beer stock levels through the /beer_stock REST endpoint, with data stored in a Redis database. 
+Stock level changes, like a replenishment of Moinette beer in the warehouse, trigger the Warehouse service to publish a message with the updated stock level to a topic. 
+The Website service then reads these messages to refresh the stock data in Redis. 
+To ensure scalability, multiple instances of the Website service will be run in parallel.
 
 <aside>
 ⚠️ Please note that this architecture is not suitable for production. But it is simple for the sake of the demo.
 
 </aside>
 
-Here is how the `BeerStock`event looks like:
+Below is an example of a `BeerStock`event:
 ```
 beerName: Moinette
 stockLevel: 42
@@ -149,14 +147,20 @@ docker compose up -d
 
 ### Step 2: build & launch the Warehouse service
 
-In a terminal, run the following commands:
+Run the following commands in a terminal:
 
 ```bash
 cd warehouse
 java -jar target/*warehouse*jar
 ```
 
-You now see in the terminal that the Warehouse service send a list of events to a topic every second:
+### Step 3: produce stock level messages
+
+Run the following command in another terminal window:
+```bash
+curl -s -X POST "http://localhost:9099/produce"
+```
+Now, in the terminal, you should see a list of events sent by the Warehouse service to a topic:
 
 ```
 Sent {"beerName":"Chimay","stockLevel":6}
@@ -174,30 +178,29 @@ Sent {"beerName":"Chimay","stockLevel":0}
 Sent {"beerName":"Chouffe","stockLevel":0}
 ```
 
-### Step 3: build & launch the Website service
+### Step 4: build & launch the Website service
 
 Kill any running Website service instance.
 
-In another terminal, run the following commands:
+Run the following commands in another terminal:
 
 ```bash
 cd website
 java -jar target/*website*jar
 ```
 
-In a third terminal, run a second instance of the Website service:
+Run a second instance of the Website service in a third terminal:
 
 ```bash
 java -jar target/*website*jar --server.port=9091
 ```
 
-You will observe one consumer instance consuming the beer stock messages while the other consumes nothing.
+You'll notice that only one consumer instance processes the beer stock messages while the other remains inactive. 
+This behavior is due to the **Failover** subscription type used here. 
+In this setup, Pulsar delivers messages exclusively to a single consumer within the same subscription. 
+If you terminate the active consumer instance, Pulsar will then route the messages to the other instance.
 
-This is because the subscription type here is **Failover**. Pulsar delivers the messages to only one consumer of the same subscription.
-
-Try killing the first instance. Then Pulsar will deliver the messages to the other instance.
-
-### Step 4: get the current stock level
+### Step 5: get the current stock level
 
 Call the API REST endpoint. The URL is: `http://localhost:9090/beer_stocks`
 
@@ -246,13 +249,29 @@ The last known stock level for Moinette is 42, 142 for Karmeliet & 0 for the oth
 
 So the payload is right. Everything happened as expected.
 
+### Step 6: automate
+
+Step 3 & 5 can be run in a loop so you don't have to repeat them during the demo.
+You can the following script
+:
+```bash
+cd website
+./update_stocks.sh
+```
+
+Every second, the script produces stock messages and reads the stock value.
+
+You can see that, because we are using the **Failover** mode, the stock values are always accurate.
+
 ## Scaling - attempt #1 - Shared subscription mode
 
-Let’s say we need to handle many more events, and a single consumer instance cannot cope with more events. Then we’ll need to add more consumer instances. However, because of the failover mode, only one instance can consume the events within the same subscription.
+If the volume of events becomes too high for a single consumer instance to handle, we need to add more instances.
 
-We’ve seen in the previous section (Messaging) that the Shared subscription mode enables consumers to scale out. The load is balanced among several consumer instances.
+However, due to the failover mode, only one instance can consume events within the same subscription.
 
-Let’s try switching to a Shared subscription and see what will happen.
+As discussed earlier in the Messaging section, using the **Shared** subscription mode allows scaling out by balancing the load across multiple consumer instances.
+
+Let's switch to a **Shared** subscription and observe the results.
 
 Open the `BeerStockConsumer` class in the `website` module.
 
@@ -282,9 +301,7 @@ In another terminal, launch a second instance of the Website service:
 java -jar target/*website*jar --server.port=9091
 ```
 
-Wait a few seconds, then get the current stock level at  `http://localhost:9090/beer_stocks`
-
-Run this several times.
+Wait a few seconds, then run the `update_stocks.sh` script.
 
 You will get different payloads. Many of them will have **wrong** stock levels:
 
@@ -345,11 +362,9 @@ In another terminal, launch a second instance of the Website service:
 java -jar target/*website*jar --server.port=9091
 ```
 
-Wait a few seconds, then get the current stock level at  `http://localhost:9090/beer_stocks`
+Wait a few seconds, then execute the update_stocks.sh script to view the results. 
 
-Run this several times.
-
-This time you’ll get the right stock levels every time:
+This time, you can expect to see accurate stock levels consistently.
 
 ```json
 [
@@ -374,9 +389,10 @@ This time you’ll get the right stock levels every time:
 
 What happens?
 
-If you carefully look at the logs, you will see that Pulsar delivers the stock levels of the same beer to the same customer. So the messages are consumed in the right order for the same beer. Now, consumers always save the latest stock level to the Redis database. 
-
-This explains why the stock value is right this time.
+If you examine the logs closely, you'll notice that Pulsar consistently delivers stock level updates for the same beer to the same consumer. 
+This ensures that messages for each beer are processed in the correct order. 
+Consequently, consumers always record the most recent stock level in the Redis database. 
+This process guarantees the accuracy of the stock values.
 
 This works because the messages are produced using the `beerName` as the **key**. 
 
