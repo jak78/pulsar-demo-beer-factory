@@ -23,7 +23,6 @@ mvn clean package
 
 # Background
 
-for handling both messaging and streaming use cases.
 As the owner of a Belgian beer reseller company, you specialize in online sales and delivering your products directly to customers. 
 Given the success and growing demand of your online store, scalability has become a priority. 
 To meet this need and streamline your operations, you've chosen [Pulsar](https://pulsar.apache.org/) as a unified platform for handling both messaging and streaming use cases.
