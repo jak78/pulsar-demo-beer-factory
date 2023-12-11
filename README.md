@@ -16,6 +16,8 @@ This also demonstrates how easy it is to code a Pulsar client Spring Boot app.
 - curl
 - jq - https://jqlang.github.io/jq/
 
+This demo is tested on MacOS. It should work on Linux as well.
+
 Build the project:
 ```bash
 mvn clean package
