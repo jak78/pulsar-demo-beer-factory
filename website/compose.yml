@@ -2,7 +2,7 @@ version: '2'
 
 services:
   pulsar:
-    image: apachepulsar/pulsar:3.1.1
+    image: apachepulsar/pulsar:3.1.2
     command: bin/pulsar standalone
     ports:
       - '6650:6650'
