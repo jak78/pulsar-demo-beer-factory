@@ -27,7 +27,7 @@ public class BeerProducer {
             pulsarTemplate.newMessage(beerStock)
                     .withMessageCustomizer(c -> c.key(beerStock.getBeerName()))
                     .withTopic("beer-stocks-topic")
-                    .send();
+                    .send(); // sendAsync
             log.info("Sent {}", beerStock);
         }
         log.info("--------------------------");
