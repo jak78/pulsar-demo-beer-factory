@@ -19,6 +19,7 @@
     <module>website</module>
     <module>delivery</module>
     <module>warehouse</module>
+    <module>stock-reader</module>
   </modules>
   <dependencyManagement>
     <dependencies>
